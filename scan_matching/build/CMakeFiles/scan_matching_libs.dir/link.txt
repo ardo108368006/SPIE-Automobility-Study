@@ -1,2 +1,0 @@
-/usr/bin/ar qc libscan_matching_libs.a  CMakeFiles/scan_matching_libs.dir/src/csv_reader.cpp.o
-/usr/bin/ranlib libscan_matching_libs.a
