@@ -7,22 +7,24 @@ void readPointsFromCsv(const char* csv_path, Eigen::MatrixX2d &points){
     string value;
     ifstream infile(csv_path);
     
-    double x, y;
     while(infile.good()){
-        //.csv檔案用","作為分隔符
         getline(infile,value,'\n');
         for(int txt = 0; txt < value.length(); txt++){
             if(value[txt] == ','){
                 if(value.substr(0, txt) != "x" && value.substr(txt+1, value.length()) != "y"){
-                    x = ::atof(value.substr(0, txt).c_str());
-                    y = ::atof(value.substr(txt+1, value.length()).c_str());
-                    cout << value.substr(0, txt) <<endl;
+                    double x = ::atof(value.substr(0, txt).c_str());
+                    double y = ::atof(value.substr(txt+1, value.length()).c_str());
                     
+                    int pt_size;
+                    pt_size = points.rows();
+                    points.conservativeResize(pt_size+1, 2);
+                    points.row(pt_size) << x, y;
                 }
                 break;
             }
         }
     }
+    infile.close();
 }
 
 void writePointsToCsv(const char* csv_path, Eigen::MatrixX2d &points){
