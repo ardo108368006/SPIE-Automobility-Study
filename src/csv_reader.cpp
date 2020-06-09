@@ -1,10 +1,6 @@
 #include <scan_matching/csv_reader.hpp>
-#include<iostream>
-#include<fstream>
-#include <vector>
-using namespace std;
 
-void readPointsFromCsv(const char* csv_path, Eigen::MatrixX2d &points){
+void readPointsFromCsv(const char* csv_path, Eigen::MatrixXd &points){
     string value;
     ifstream infile(csv_path);
 
@@ -31,8 +27,8 @@ void readPointsFromCsv(const char* csv_path, Eigen::MatrixX2d &points){
         if(!num_checker && row_data.size() > 0){
             int pt_size;
             pt_size = points.rows();
-
             points.conservativeResize(pt_size + 1, row_data.size());
+
             for(int element = 0; element < row_data.size(); element++){
                 points(pt_size, element) = row_data[element];
             }
@@ -41,8 +37,29 @@ void readPointsFromCsv(const char* csv_path, Eigen::MatrixX2d &points){
     infile.close();
 }
 
-void writePointsToCsv(const char* csv_path, Eigen::MatrixX2d &points){
-    //  FILE *outfile;
-    //  outfile = fopen(csv_path, "a");
+void writePointsToCsv(const char* csv_path, Eigen::MatrixXd &points, vector<string> label){
+    fstream outfile;
+    outfile.open(csv_path, ios::out);
 
+    int colsLength = label.size();
+    for(int col = 0; col < colsLength; col++){
+        outfile << label[col];
+        if(col == colsLength-1){
+            outfile << "\n";
+        }else{
+            outfile << ",";
+        }
+    }
+
+    for(int row = 0; row < points.rows(); row++){
+        for(int col = 0; col < points.cols(); col++){
+            outfile << points(row, col);
+            if(col == points.cols()-1){
+                outfile << "\n";
+            }else{
+                outfile << ",";
+            }
+        }
+    }
+    outfile.close();
 }  
