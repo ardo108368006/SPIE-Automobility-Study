@@ -1,5 +1,3 @@
-#include <iostream>
-#include <Eigen/Dense>
 #include <scan_matching/csv_reader.hpp>
 #include <math.h>
 #define PI 3.14159265
@@ -9,24 +7,25 @@ int main(int argc, char const *argv[]){
     readPointsFromCsv(argv[1], input_points);
     std::cout << "Input\n" << input_points << std::endl;
 
+    input_points.conservativeResize(input_points.rows(), 3);
+    for(int i = 0; i < input_points.rows(); i++){
+        input_points(i, 2) = 1;
+    }
+    
     Eigen::MatrixXd rot_points;
     //write code for rotating points
 
-    Eigen::MatrixXd rotation(2, 2);
-    double degrees = stod(argv[3]);
-    rotation << cos(degrees * PI / 180.0), -sin(degrees * PI / 180.0),
-                sin(degrees * PI / 180.0), cos(degrees * PI / 180.0);
-    
-    Eigen::MatrixXd translate(2, 1);
+    Eigen::MatrixXd RT(3,3);
+    double degrees = stod(argv[3])* PI / 180.0;
     double translate_x = stod(argv[4]);
     double translate_y = stod(argv[5]);
-    translate << translate_x,
-                 translate_y;
+
+    RT << cos(degrees), -sin(degrees), translate_x,
+          sin(degrees),  cos(degrees), translate_y,
+                     0,            0,           1;
     
-    for(int i = 0; i < input_points.rows(); i++){
-        rot_points.conservativeResize(i + 1, input_points.cols());
-        rot_points.row(i) = (rotation * input_points.row(i).transpose() + translate).transpose();
-    }
+    rot_points = (RT*input_points.transpose()).transpose();
+    rot_points.conservativeResize(rot_points.rows(), 2);
     std::cout << "Output\n" << rot_points << std::endl;
 
     vector<string> label = {"x", "y"};
